@@ -580,7 +580,7 @@ const Chat = () => {
         // Returning the prettified error message
         if (reason !== '') {
           return (
-            'The prompt was filtered due to triggering Azure OpenAI’s content filtering system.\n' +
+            'The prompt was filtered due to triggering Azure OpenAIs content filtering system.\n' +
             'Reason: This prompt contains content flagged as ' +
             reason +
             '\n\n' +
@@ -656,27 +656,12 @@ const Chat = () => {
           saveToDB(appStateContext.state.currentChat.messages, appStateContext.state.currentChat.id)
             .then(res => {
               if (!res.ok) {
-                let errorMessage =
-                  "An error occurred. Answers can't be saved at this time. If the problem persists, please contact the site administrator."
-                let errorChatMsg: ChatMessage = {
-                  id: uuid(),
-                  role: ERROR,
-                  content: errorMessage,
-                  date: new Date().toISOString()
-                }
-                if (!appStateContext?.state.currentChat?.messages) {
-                  let err: Error = {
-                    ...new Error(),
-                    message: 'Failure fetching current chat state.'
-                  }
-                  throw err
-                }
-                setMessages([...appStateContext?.state.currentChat?.messages, errorChatMsg])
+                console.error("Failed to save chat history:", res.status, res.statusText);
               }
               return res as Response
             })
             .catch(err => {
-              console.error('Error: ', err)
+              console.error('Error saving to DB: ', err)
               let errRes: Response = {
                 ...new Response(),
                 ok: false,
